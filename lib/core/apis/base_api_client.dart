@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:ecommerce_app/features/main_layout/home/data/models/brands_response.dart';
 import 'package:ecommerce_app/features/main_layout/home/data/models/categories_response.dart';
+import 'package:ecommerce_app/features/products_screen/data/models/products_response.dart';
 import 'package:injectable/injectable.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
@@ -18,4 +19,10 @@ abstract class BaseApiClient {
 
   @GET('/api/v1/brands')
   Future<BrandsResponse> getAllBrands();
+
+  @GET('/api/v1/products')
+  Future<ProductsResponse> getProducts({
+    @Query('category[in]') String? categoryId,
+    @Query('brand') String? brandId,
+  });
 }

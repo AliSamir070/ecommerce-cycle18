@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:ecommerce_app/core/DI/di.dart';
+import 'package:ecommerce_app/core/arguments/products_arguments.dart';
 import 'package:ecommerce_app/core/routes_manager/routes.dart';
 import 'package:ecommerce_app/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:ecommerce_app/features/auth/presentation/screens/sign_up_screen.dart';
@@ -5,7 +9,9 @@ import 'package:ecommerce_app/features/cart/screens/cart_screen.dart';
 import 'package:ecommerce_app/features/main_layout/main_layout.dart';
 import 'package:ecommerce_app/features/product_details/presentation/screen/product_details.dart';
 import 'package:ecommerce_app/features/products_screen/presentation/screens/products_screen.dart';
+import 'package:ecommerce_app/features/products_screen/presentation/view_model/products_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
 
 class RouteGenerator {
@@ -17,7 +23,14 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const MainLayout());
 
       case Routes.productsScreenRoute:
-        return MaterialPageRoute(builder: (_) => const ProductsScreen());
+        final args = settings.arguments as ProductsArguments;
+        log(args.toString());
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<ProductsViewModel>(),
+            child: ProductsScreen(arguments: args),
+          ),
+        );
 
       case Routes.productDetails:
         return MaterialPageRoute(builder: (_) => const ProductDetails());

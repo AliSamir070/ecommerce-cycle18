@@ -39,6 +39,18 @@ import '../../features/main_layout/home/domain/usecases/get_all_categories_useca
     as _i870;
 import '../../features/main_layout/home/presentation/view_model/home_tab_view_model.dart'
     as _i590;
+import '../../features/products_screen/data/data_sources/products_data_source.dart'
+    as _i269;
+import '../../features/products_screen/data/data_sources/products_data_source_impl.dart'
+    as _i149;
+import '../../features/products_screen/data/repository/products_repository_impl.dart'
+    as _i395;
+import '../../features/products_screen/domain/repository/products_repository.dart'
+    as _i354;
+import '../../features/products_screen/domain/usecases/get_products_usecase.dart'
+    as _i936;
+import '../../features/products_screen/presentation/view_model/products_view_model.dart'
+    as _i64;
 import '../apis/base_api_client.dart' as _i1046;
 import 'register_module.dart' as _i291;
 
@@ -58,6 +70,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i1046.BaseApiClient>(
         () => _i1046.BaseApiClient(gh<_i361.Dio>()));
     gh.singleton<_i397.AuthClient>(() => _i397.AuthClient(gh<_i361.Dio>()));
+    gh.factory<_i269.ProductsDataSource>(
+        () => _i149.ProductsDataSourceImpl(gh<_i1046.BaseApiClient>()));
     gh.factory<_i263.HomeTabDataSource>(
         () => _i701.HomeTabDataSourceImpl(gh<_i1046.BaseApiClient>()));
     gh.factory<_i164.HomeTabRepository>(
@@ -69,6 +83,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i474.GetAllBrandsUsecase(gh<_i164.HomeTabRepository>()));
     gh.factory<_i870.GetAllCategoriesUsecase>(
         () => _i870.GetAllCategoriesUsecase(gh<_i164.HomeTabRepository>()));
+    gh.factory<_i354.ProductsRepository>(
+        () => _i395.ProductsRepositoryImpl(gh<_i269.ProductsDataSource>()));
     gh.singleton<_i277.SignInUseCase>(
         () => _i277.SignInUseCase(gh<_i170.AuthRepo>()));
     gh.singleton<_i538.SignUpUseCase>(
@@ -81,6 +97,10 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i870.GetAllCategoriesUsecase>(),
           gh<_i474.GetAllBrandsUsecase>(),
         ));
+    gh.factory<_i936.GetProductsUsecase>(
+        () => _i936.GetProductsUsecase(gh<_i354.ProductsRepository>()));
+    gh.factory<_i64.ProductsViewModel>(
+        () => _i64.ProductsViewModel(gh<_i936.GetProductsUsecase>()));
     return this;
   }
 }

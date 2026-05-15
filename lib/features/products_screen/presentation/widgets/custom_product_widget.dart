@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_app/core/resources/color_manager.dart';
 import 'package:ecommerce_app/core/resources/styles_manager.dart';
 import 'package:ecommerce_app/core/routes_manager/routes.dart';
@@ -48,13 +49,15 @@ class CustomProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.pushNamed(context, Routes.productDetails),
+      onTap: () => Navigator.pushNamed(
+        context,
+        Routes.productDetails,
+      ),
       child: Container(
-        width: width * 0.4,
-        height: height * 0.3,
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           border: Border.all(
-            color: ColorManager.primary.withOpacity(0.3),
+            color: ColorManager.primary.withValues(alpha: 0.3),
             width: 2,
           ),
           borderRadius: BorderRadius.circular(16.r),
@@ -69,28 +72,24 @@ class CustomProductWidget extends StatelessWidget {
                 children: [
                   // Not working with the lastest flutter version
 
-                  // CachedNetworkImage(
-                  //   imageUrl: image,
-                  //   height: height * 0.15,
-                  //   width: double.infinity,
-                  //   fit: BoxFit.cover,
-                  //   placeholder: (context, url) =>
-                  //       const Center(child: CircularProgressIndicator()),
-                  //   errorWidget: (context, url, error) => const Icon(Icons.error),
-                  // ),
-                  // Image.network(
-                  //   image,
-                  //   fit: BoxFit.cover,
-                  // ),
                   ClipRRect(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(14.r)),
-                    child: Image.asset(
-                      image,
+                    borderRadius: BorderRadiusGeometry.circular(16.r),
+                    child: CachedNetworkImage(
+                      imageUrl: image,
+                      height: height * 0.15,
+                      width: double.infinity,
                       fit: BoxFit.cover,
-                      width: width,
+                      placeholder: (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     ),
                   ),
+                  Image.network(
+                    image,
+                    fit: BoxFit.cover,
+                  ),
+
                   Positioned(
                       top: height * 0.01,
                       right: width * 0.02,
@@ -98,94 +97,91 @@ class CustomProductWidget extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(
-              flex: 5,
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      truncateTitle(title),
-                      style: getMediumStyle(
-                        color: ColorManager.textColor,
-                        fontSize: 14.sp,
-                      ),
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    truncateTitle(title),
+                    style: getMediumStyle(
+                      color: ColorManager.textColor,
+                      fontSize: 14.sp,
                     ),
-                    SizedBox(height: height * 0.002),
-                    Text(
-                      truncateDescription(description),
-                      style: getRegularStyle(
-                        color: ColorManager.textColor,
-                        fontSize: 14.sp,
-                      ),
+                  ),
+                  SizedBox(height: height * 0.002),
+                  Text(
+                    truncateDescription(description),
+                    style: getRegularStyle(
+                      color: ColorManager.textColor,
+                      fontSize: 14.sp,
                     ),
-                    SizedBox(height: height * 0.01),
-                    SizedBox(
-                      width: width * 0.3,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "EGP $price",
-                            style: getRegularStyle(
-                              color: ColorManager.textColor,
-                              fontSize: 14.sp,
-                            ),
-                          ),
-                          Text(
-                            "$discountPercentage %",
-                            style: getTextWithLine(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // SizedBox(height: height * 0.005),
-                    Row(
+                  ),
+                  SizedBox(height: height * 0.01),
+                  SizedBox(
+                    width: width * 0.3,
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          // width: width * 0.22,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Review ($rating)",
-                                style: getRegularStyle(
-                                  color: ColorManager.textColor,
-                                  fontSize: 12.sp,
-                                ),
-                              ),
-                              const Icon(
-                                Icons.star_rate_rounded,
-                                color: ColorManager.starRateColor,
-                              ),
-                            ],
+                        Text(
+                          "EGP $price",
+                          style: getRegularStyle(
+                            color: ColorManager.textColor,
+                            fontSize: 14.sp,
                           ),
                         ),
-                        const Spacer(),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: InkWell(
-                            onTap: () {},
-                            child: Container(
-                              height: height * 0.036,
-                              width: width * 0.08,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ColorManager.primary,
+                        Text(
+                          "$discountPercentage %",
+                          style: getTextWithLine(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // SizedBox(height: height * 0.005),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        // width: width * 0.22,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Review ($rating)",
+                              style: getRegularStyle(
+                                color: ColorManager.textColor,
+                                fontSize: 12.sp,
                               ),
-                              child: const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                              ),
+                            ),
+                            const Icon(
+                              Icons.star_rate_rounded,
+                              color: ColorManager.starRateColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: InkWell(
+                          onTap: () {},
+                          child: Container(
+                            height: height * 0.036,
+                            width: width * 0.08,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: ColorManager.primary,
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              color: Colors.white,
                             ),
                           ),
                         ),
-                      ],
-                    )
-                  ],
-                ),
+                      ),
+                    ],
+                  )
+                ],
               ),
             ),
           ],
