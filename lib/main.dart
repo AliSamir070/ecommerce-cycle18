@@ -1,14 +1,12 @@
 import 'package:ecommerce_app/core/remote/local/prefs_manager.dart';
-import 'package:ecommerce_app/core/resources/api_result.dart';
 import 'package:ecommerce_app/core/routes_manager/routes.dart';
-import 'package:ecommerce_app/features/auth/data/model/auth_response/auth_response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/DI/di.dart';
 import 'core/routes_manager/route_generator.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
   await PrefsManager.init();
@@ -29,8 +27,8 @@ class MainApp extends StatelessWidget {
         home: child,
         onGenerateRoute: RouteGenerator.getRoute,
         initialRoute: PrefsManager.getToken().isEmpty
-            ?Routes.signInRoute
-            :Routes.mainRoute,
+            ? Routes.signInRoute
+            : Routes.mainRoute,
       ),
     );
   }

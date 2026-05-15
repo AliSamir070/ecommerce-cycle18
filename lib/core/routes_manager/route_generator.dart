@@ -11,7 +11,6 @@ import 'package:page_transition/page_transition.dart';
 class RouteGenerator {
   static Route<dynamic> getRoute(RouteSettings settings) {
     switch (settings.name) {
-
       case Routes.cartRoute:
         return MaterialPageRoute(builder: (_) => const CartScreen());
       case Routes.mainRoute:
@@ -28,10 +27,11 @@ class RouteGenerator {
 
       case Routes.signUpRoute:
         return PageTransition(
-            alignment: Alignment.center,
-            type: PageTransitionType.scale,
-            duration: Duration(seconds: 2),
-            child:SignUpScreen());
+          alignment: Alignment.center,
+          type: PageTransitionType.scale,
+          duration: Duration(milliseconds: 500),
+          child: SignUpScreen(),
+        );
       default:
         return unDefinedRoute();
     }

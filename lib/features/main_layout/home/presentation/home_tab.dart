@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'package:ecommerce_app/features/main_layout/home/presentation/view_model/home_tab_states.dart';
+import 'package:ecommerce_app/features/main_layout/home/presentation/view_model/home_tab_view_model.dart';
+import 'package:ecommerce_app/features/main_layout/home/presentation/widgets/custom_brand_widget.dart';
 import 'package:ecommerce_app/features/main_layout/home/presentation/widgets/custom_category_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/resources/assets_manager.dart';
@@ -59,32 +63,72 @@ class _HomeTabState extends State<HomeTab> {
               CustomSectionBar(sectionNname: 'Categories', function: () {}),
               SizedBox(
                 height: 270.h,
-                child: GridView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return const CustomCategoryWidget();
+                child: BlocBuilder<HomeTabViewModel, HomeTabStates>(
+                  buildWhen: (previous, current) =>
+                      current is CategoriesLoadingState ||
+                      current is CategoriesSuccessState ||
+                      current is CategoriesFailureState,
+                  builder: (context, state) {
+                    if (state is CategoriesLoadingState) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is CategoriesFailureState) {
+                      return Center(
+                        child: Text(state.failureMessage),
+                      );
+                    } else if (state is CategoriesSuccessState) {
+                      return GridView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return CustomCategoryWidget(
+                            category: state.categories[index],
+                          );
+                        },
+                        itemCount: state.categories.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        ),
+                      );
+                    } else {
+                      return SizedBox.shrink();
+                    }
                   },
-                  itemCount: 20,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
                 ),
               ),
-              // SizedBox(height: 12.h),
-              // CustomSectionBar(sectionNname: 'Brands', function: () {}),
-              // SizedBox(
-              //   height: 270.h,
-              //   child: GridView.builder(
-              //     scrollDirection: Axis.horizontal,
-              //     itemBuilder: (context, index) {
-              //       return const CustomBrandWidget();
-              //     },
-              //     itemCount: 20,
-              //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              //       crossAxisCount: 2,
-              //     ),
-              //   ),
-              // ),
+
+              const SizedBox(height: 16),
+              CustomSectionBar(sectionNname: 'Brands', function: () {}),
+              SizedBox(
+                height: 270.h,
+                child: BlocBuilder<HomeTabViewModel, HomeTabStates>(
+                  buildWhen: (previous, current) =>
+                      current is BrandsLoadingState ||
+                      current is BrandsSuccessState ||
+                      current is BrandsFailureState,
+                  builder: (context, state) {
+                    if (state is BrandsSuccessState) {
+                      return GridView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return CustomBrandWidget(brand: state.brands[index]);
+                        },
+                        itemCount: state.brands.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        ),
+                      );
+                    } else if (state is BrandsFailureState) {
+                      return Center(
+                        child: Text(state.errorMessage),
+                      );
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  },
+                ),
+              ),
+
               // CustomSectionBar(
               //   sectionNname: 'Most Selling Products',
               //   function: () {},
@@ -109,7 +153,7 @@ class _HomeTabState extends State<HomeTab> {
               //     ),
               //   ),
               // ),
-              SizedBox(height: 12.h),
+              // SizedBox(height: 12.h),
             ],
           )
         ],
