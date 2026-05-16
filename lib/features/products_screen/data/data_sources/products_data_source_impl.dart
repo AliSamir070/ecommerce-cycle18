@@ -1,6 +1,9 @@
 import 'package:ecommerce_app/core/apis/base_api_client.dart';
+import 'package:ecommerce_app/core/remote/local/prefs_manager.dart';
 import 'package:ecommerce_app/core/resources/api_result.dart';
 import 'package:ecommerce_app/features/products_screen/data/data_sources/products_data_source.dart';
+import 'package:ecommerce_app/features/products_screen/data/models/add_to_cart_request_model.dart';
+import 'package:ecommerce_app/features/products_screen/data/models/add_to_cart_response.dart';
 import 'package:ecommerce_app/features/products_screen/data/models/products_response.dart';
 import 'package:injectable/injectable.dart';
 
@@ -18,6 +21,26 @@ class ProductsDataSourceImpl implements ProductsDataSource {
       final result = await _apiClient.getProducts(
         brandId: brandId,
         categoryId: categoryId,
+      );
+
+      if (result.statusMsg == null) {
+        return Success(result);
+      } else {
+        return Failure(result.message ?? "Something Went Wrong");
+      }
+    } catch (exception) {
+      return Failure(exception.toString());
+    }
+  }
+
+  @override
+  Future<ApiResult<AddToCartResponse>> addToCart({
+    required AddToCartRequestModel body,
+  }) async {
+    try {
+      final result = await _apiClient.addProductToCart(
+        body: body,
+        token: PrefsManager.getToken(),
       );
 
       if (result.statusMsg == null) {

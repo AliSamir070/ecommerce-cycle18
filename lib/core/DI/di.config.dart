@@ -47,6 +47,8 @@ import '../../features/products_screen/data/repository/products_repository_impl.
     as _i395;
 import '../../features/products_screen/domain/repository/products_repository.dart'
     as _i354;
+import '../../features/products_screen/domain/usecases/add_to_cart_usecase.dart'
+    as _i631;
 import '../../features/products_screen/domain/usecases/get_products_usecase.dart'
     as _i936;
 import '../../features/products_screen/presentation/view_model/products_view_model.dart'
@@ -97,10 +99,14 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i870.GetAllCategoriesUsecase>(),
           gh<_i474.GetAllBrandsUsecase>(),
         ));
+    gh.factory<_i631.AddToCartUsecase>(
+        () => _i631.AddToCartUsecase(gh<_i354.ProductsRepository>()));
     gh.factory<_i936.GetProductsUsecase>(
         () => _i936.GetProductsUsecase(gh<_i354.ProductsRepository>()));
-    gh.factory<_i64.ProductsViewModel>(
-        () => _i64.ProductsViewModel(gh<_i936.GetProductsUsecase>()));
+    gh.factory<_i64.ProductsViewModel>(() => _i64.ProductsViewModel(
+          gh<_i936.GetProductsUsecase>(),
+          gh<_i631.AddToCartUsecase>(),
+        ));
     return this;
   }
 }

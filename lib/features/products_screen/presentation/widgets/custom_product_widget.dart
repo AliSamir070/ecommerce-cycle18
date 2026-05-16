@@ -3,7 +3,10 @@ import 'package:ecommerce_app/core/resources/color_manager.dart';
 import 'package:ecommerce_app/core/resources/styles_manager.dart';
 import 'package:ecommerce_app/core/routes_manager/routes.dart';
 import 'package:ecommerce_app/core/widget/heart_button.dart';
+import 'package:ecommerce_app/features/products_screen/presentation/view_model/products_states.dart';
+import 'package:ecommerce_app/features/products_screen/presentation/view_model/products_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomProductWidget extends StatelessWidget {
@@ -15,6 +18,7 @@ class CustomProductWidget extends StatelessWidget {
   final double price;
   final double discountPercentage;
   final double rating;
+  final String id;
 
   const CustomProductWidget({
     super.key,
@@ -26,6 +30,7 @@ class CustomProductWidget extends StatelessWidget {
     required this.price,
     required this.discountPercentage,
     required this.rating,
+    required this.id,
   });
 
   String truncateTitle(String title) {
@@ -164,7 +169,11 @@ class CustomProductWidget extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(100),
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            context
+                                .read<ProductsViewModel>()
+                                .addProductToCart(productId: id);
+                          },
                           child: Container(
                             height: height * 0.036,
                             width: width * 0.08,
@@ -172,9 +181,30 @@ class CustomProductWidget extends StatelessWidget {
                               shape: BoxShape.circle,
                               color: ColorManager.primary,
                             ),
-                            child: const Icon(
-                              Icons.add,
-                              color: Colors.white,
+                            child:
+                                BlocBuilder<ProductsViewModel, ProductsStates>(
+                              buildWhen: (previous, current) {
+                                if (current is AddToCartLoadingState) {
+                                  return current.productId == id;
+                                }
+                                if (current is AddToCartSuccessState) {
+                                  return current.productId == id;
+                                }
+                                if (current is AddToCartFailureState) {
+                                  return current.productId == id;
+                                }
+                                return false;
+                              },
+                              builder: (context, state) {
+                                return state is AddToCartLoadingState
+                                    ? CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                    : const Icon(
+                                        Icons.add,
+                                        color: Colors.white,
+                                      );
+                              },
                             ),
                           ),
                         ),

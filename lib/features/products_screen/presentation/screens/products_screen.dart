@@ -5,6 +5,7 @@ import 'package:ecommerce_app/features/products_screen/presentation/view_model/p
 import 'package:ecommerce_app/features/products_screen/presentation/widgets/custom_product_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../../core/widget/home_screen_app_bar.dart';
 
@@ -30,60 +31,93 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: const HomeScreenAppBar(
-        automaticallyImplyLeading: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(AppPadding.p16),
-        child: Column(
-          children: [
-            BlocBuilder<ProductsViewModel, ProductsStates>(
-              buildWhen: (previous, current) =>
-                  current is ProductsLoadingState ||
-                  current is ProductsSuccessState ||
-                  current is ProductsFailureState,
-              builder: (context, state) {
-                switch (state) {
-                  case ProductsInitialState():
-                    return SizedBox.shrink();
-                  case ProductsLoadingState():
-                    return const Expanded(
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  case ProductsSuccessState():
-                    return Expanded(
-                      child: GridView.builder(
-                        itemCount: state.products.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                          childAspectRatio: 7 / 9,
+    return BlocListener<ProductsViewModel, ProductsStates>(
+      listenWhen: (previous, current) =>
+          current is AddToCartLoadingState ||
+          current is AddToCartSuccessState ||
+          current is AddToCartFailureState,
+      listener: (context, state) {
+        if (state is AddToCartSuccessState) {
+          Fluttertoast.showToast(
+            msg: state.message,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 14,
+          );
+        }
+
+        if (state is AddToCartFailureState) {
+          Fluttertoast.showToast(
+            msg: state.failureMessage,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 14,
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: const HomeScreenAppBar(
+          automaticallyImplyLeading: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(AppPadding.p16),
+          child: Column(
+            children: [
+              BlocBuilder<ProductsViewModel, ProductsStates>(
+                buildWhen: (previous, current) =>
+                    current is ProductsLoadingState ||
+                    current is ProductsSuccessState ||
+                    current is ProductsFailureState,
+                builder: (context, state) {
+                  switch (state) {
+                    case ProductsInitialState():
+                      return SizedBox.shrink();
+                    case ProductsLoadingState():
+                      return const Expanded(
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    case ProductsSuccessState():
+                      return Expanded(
+                        child: GridView.builder(
+                          itemCount: state.products.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                            childAspectRatio: 7 / 9,
+                          ),
+                          itemBuilder: (context, index) {
+                            final product = state.products[index];
+                            return CustomProductWidget(
+                              id: product.id ?? "",
+                              image: product.imageCover ?? "",
+                              title: product.title ?? "",
+                              price: product.price?.toDouble() ?? 0,
+                              rating: product.ratingsAverage?.toDouble() ?? 0,
+                              discountPercentage: 10,
+                              height: height,
+                              width: width,
+                              description: product.description ?? "",
+                            );
+                          },
+                          scrollDirection: Axis.vertical,
                         ),
-                        itemBuilder: (context, index) {
-                          final product = state.products[index];
-                          return CustomProductWidget(
-                            image: product.imageCover ?? "",
-                            title: product.title ?? "",
-                            price: product.price?.toDouble() ?? 0,
-                            rating: product.ratingsAverage?.toDouble() ?? 0,
-                            discountPercentage: 10,
-                            height: height,
-                            width: width,
-                            description: product.description ?? "",
-                          );
-                        },
-                        scrollDirection: Axis.vertical,
-                      ),
-                    );
-                  case ProductsFailureState():
-                    return Expanded(child: Center(child: Text(state.message)));
-                }
-              },
-            )
-          ],
+                      );
+                    case ProductsFailureState():
+                      return Expanded(
+                          child: Center(child: Text(state.message)));
+                    default:
+                      return SizedBox.shrink();
+                  }
+                },
+              )
+            ],
+          ),
         ),
       ),
     );
